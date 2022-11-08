@@ -59,7 +59,7 @@ run(int argc, char **argv)
     return 1;
   }
 
-  ros::Publisher publisher = nh.advertise<sensor_msgs::LaserScan>("scan", 1024);
+  ros::Publisher publisher = nh.advertise<sensor_msgs::LaserScan>("raw_lidar", 1024);
 
   LidarLiteDriver driver((uint8_t)i2c_bus, i2c_address);
   driver.configure(LidarLiteDriver::OperationMode::DEFAULT);
@@ -74,7 +74,7 @@ run(int argc, char **argv)
     msg.header.frame_id = frame_id;
     msg.header.stamp = ros::Time::now();
 
-    float distance_in_meters = distance->value / 100.0;
+    float distance_in_cm = distance->value;
 
     msg.angle_min = 0.;
     msg.angle_max = 0.;
@@ -83,7 +83,7 @@ run(int argc, char **argv)
     //msg.scan_time = 0.;
     msg.range_min = 0.;
     msg.range_max = 40.;
-    msg.ranges.push_back(distance_in_meters);
+    msg.ranges.push_back(distance_in_cm);
     msg.intensities.push_back(distance->value);
 
     publisher.publish(msg);
